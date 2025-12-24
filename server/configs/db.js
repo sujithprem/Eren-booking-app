@@ -7,25 +7,15 @@ if (!cached) {
 }
 
 const connectDB = async () => {
-  if (cached.conn) {
-    return cached.conn;
-  }
+  if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(process.env.MONGODB_URI, {
-      bufferCommands: false,
-    });
+    cached.promise = mongoose.connect(process.env.MONGODB_URI);
   }
 
-  try {
-    cached.conn = await cached.promise;
-    console.log("✅ Database connected");
-    return cached.conn;
-  } catch (error) {
-    cached.promise = null;
-    console.error("❌ MongoDB connection failed:", error);
-    throw error; // 🔥 DO NOT exit process
-  }
+  cached.conn = await cached.promise;
+  console.log("✅ MongoDB connected");
+  return cached.conn;
 };
 
 export default connectDB;
