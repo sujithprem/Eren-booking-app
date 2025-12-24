@@ -1,19 +1,22 @@
 import { Inngest } from "inngest";
 import { serve } from "inngest/vercel";
 import User from "../models/User.js";
-import dbConnect from "../configs/db.js";
+import connectDB from "../configs/db.js";
 
-export const inngest = new Inngest({ id: "movie-ticket-booking" });
+const inngest = new Inngest({
+  id: "movie-ticket-booking",
+  eventKey: process.env.INNGEST_EVENT_KEY,
+});
 
 const syncUserCreation = inngest.createFunction(
   { id: "sync-user-from-clerk" },
   { event: "clerk/user.created" },
   async ({ event }) => {
-    await dbConnect();
+    await connectDB();
 
     const { id, first_name, last_name, email_addresses, image_url } = event.data;
     const email = email_addresses?.[0]?.email_address;
-    if (!email) return { skipped: true };
+    if (!email) return;
 
     await User.create({
       _id: id,
@@ -21,8 +24,6 @@ const syncUserCreation = inngest.createFunction(
       name: `${first_name} ${last_name}`,
       image: image_url,
     });
-
-    return { success: true };
   }
 );
 
@@ -30,9 +31,8 @@ const syncUserDeletion = inngest.createFunction(
   { id: "delete-user-with-clerk" },
   { event: "clerk/user.deleted" },
   async ({ event }) => {
-    await dbConnect();
+    await connectDB();
     await User.findByIdAndDelete(event.data.id);
-    return { deleted: true };
   }
 );
 
@@ -40,11 +40,11 @@ const syncUserUpdation = inngest.createFunction(
   { id: "update-user-from-clerk" },
   { event: "clerk/user.updated" },
   async ({ event }) => {
-    await dbConnect();
+    await connectDB();
 
     const { id, first_name, last_name, email_addresses, image_url } = event.data;
     const email = email_addresses?.[0]?.email_address;
-    if (!email) return { skipped: true };
+    if (!email) return;
 
     await User.findByIdAndUpdate(
       id,
@@ -55,8 +55,6 @@ const syncUserUpdation = inngest.createFunction(
       },
       { upsert: true }
     );
-
-    return { updated: true };
   }
 );
 
