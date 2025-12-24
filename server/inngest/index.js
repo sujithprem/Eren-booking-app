@@ -12,7 +12,6 @@ const syncUserCreation = inngest.createFunction(
     await dbConnect();
 
     const { id, first_name, last_name, email_addresses, image_url } = event.data;
-
     const email = email_addresses?.[0]?.email_address;
     if (!email) return { skipped: true };
 
@@ -44,7 +43,6 @@ const syncUserUpdation = inngest.createFunction(
     await dbConnect();
 
     const { id, first_name, last_name, email_addresses, image_url } = event.data;
-
     const email = email_addresses?.[0]?.email_address;
     if (!email) return { skipped: true };
 
@@ -55,7 +53,7 @@ const syncUserUpdation = inngest.createFunction(
         name: `${first_name} ${last_name}`,
         image: image_url,
       },
-      { upsert: true, new: true }
+      { upsert: true }
     );
 
     return { updated: true };
