@@ -1,6 +1,6 @@
 import { Inngest } from "inngest";
 import { serve } from "inngest/vercel";
-import User from "../models/User.js";
+import User from "../models/user.js";
 import connectDB from "../configs/db.js";
 
 const inngest = new Inngest({
