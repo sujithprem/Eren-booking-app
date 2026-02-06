@@ -5,8 +5,9 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "server": "nodemon server.js",
-    "start": "node server.js"
+    "server": "nodemon --exec node server.js",
+    "start": "node server.js",
+     "dev": "inngest dev"
   },
   "keywords": [],
   "author": "",
